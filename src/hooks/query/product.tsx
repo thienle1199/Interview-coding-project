@@ -5,9 +5,19 @@ const fetchProducts: (skip: number, search: string) => Promise<APIResponse> = (
   skip = 0,
   search = ""
 ) => {
-  let fetchURL = `https://dummyjson.com/products?skip=${skip}&limit=20`;
+  // handle initial data loading
+  let fetchURL = `https://dummyjson.com/products`;
+  if (skip > 0) {
+    fetchURL = `https://dummyjson.com/products?skip=${skip}&limit=20`;
+  }
+
+  // Handle search
   if (search.length > 0) {
-    fetchURL = `https://dummyjson.com/products/search?q=${search}&skip=${skip}`;
+    fetchURL = `https://dummyjson.com/products/search?q=${search}`;
+
+    if (skip > 0) {
+      fetchURL = `https://dummyjson.com/products/search?q=${search}&skip=${skip}&limit=20`;
+    }
   }
   return fetch(fetchURL).then((res) => res.json());
 };
