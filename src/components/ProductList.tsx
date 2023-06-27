@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import debounce from "../helpers/debounce";
 import { useProductQuery } from "../hooks/query/product";
+import { useDebounce } from "usehooks-ts";
 
 export const ProductList = () => {
   const [searchString, setSearchString] = useState("");
-  const productQuery = useProductQuery(searchString);
-
-  const { ref, inView } = useInView();
+  const debouncedSearchString = useDebounce<string>(searchString, 500);
 
   const {
     data,
@@ -17,7 +15,9 @@ export const ProductList = () => {
     hasNextPage,
     isFetchingNextPage,
     status,
-  } = productQuery;
+  } = useProductQuery(debouncedSearchString);
+
+  const { ref, inView } = useInView();
 
   useEffect(() => {
     if (inView) {
@@ -25,30 +25,31 @@ export const ProductList = () => {
     }
   }, [fetchNextPage, inView]);
 
-  const handleSearch: React.ChangeEventHandler<HTMLInputElement> = debounce(
-    (evt) => {
-      setSearchString(evt.target.value);
-    },
-    500
-  );
+  const handleSearch: React.ChangeEventHandler<HTMLInputElement> = (evt) => {
+    setSearchString(evt.target.value.trimStart());
+  };
 
   if (error) return `An error has occurred: ${error.message}`;
 
   const noProductFound =
     status === "success" &&
-    searchString.length > 0 &&
+    debouncedSearchString.length > 0 &&
     data.pages.length === 1 &&
     data.pages[0].total === 0;
 
   return (
     <div className="product-list-container">
       <div className="search-group">
-        <input onChange={handleSearch} placeholder="search product..." />
+        <input
+          value={searchString}
+          onChange={handleSearch}
+          placeholder="search product..."
+        />
       </div>
 
       {noProductFound && <h1>No product found</h1>}
-      {searchString.length > 0 && !noProductFound && !isLoading && (
-        <h1>{`Search result for: ${searchString}`}</h1>
+      {debouncedSearchString.length > 0 && !noProductFound && !isLoading && (
+        <h1>{`Search result for: ${debouncedSearchString}`}</h1>
       )}
       {isLoading ? (
         <h1 className="loading">Loading...</h1>
