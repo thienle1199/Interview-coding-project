@@ -19,7 +19,6 @@ export const useProductQuery = (search: string) =>
       return fetchProducts(pageParam, queryKey[1] as string);
     },
     getNextPageParam: (lastPage) => {
-      console.log("lastPage", lastPage);
       const newPage = lastPage.skip === 0 ? lastPage.limit : lastPage.skip + 20;
       if (newPage >= lastPage.total) return undefined;
       return newPage;

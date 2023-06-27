@@ -47,7 +47,7 @@ export const ProductList = () => {
       </div>
 
       {noProductFound && <h1>No product found</h1>}
-      {searchString.length > 0 && !noProductFound && (
+      {searchString.length > 0 && !noProductFound && !isLoading && (
         <h1>{`Search result for: ${searchString}`}</h1>
       )}
       {isLoading ? (
@@ -69,10 +69,21 @@ export const ProductList = () => {
                     />
                     <div className="product-info">
                       <h2 className="product-title">{product.title}</h2>
-                      <p>{product.id}</p>
-                      <p>{product.description}</p>
-                      <p>{product.price}</p>
-                      <p>{product.rating}</p>
+                      <p>
+                        <b>Description</b>: {product.description}
+                      </p>
+                      <p>
+                        <b>Rating</b>: {product.rating}
+                      </p>
+                      <p>
+                        <b>Price</b>: ${product.price}
+                      </p>
+                      <p>
+                        <b>Category</b>: {product.category}
+                      </p>
+                      <p>
+                        <b>Stock</b>: {product.stock}
+                      </p>
                     </div>
                   </li>
                 ))}
